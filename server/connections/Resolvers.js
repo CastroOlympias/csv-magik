@@ -2,7 +2,7 @@
 const { createAUser, loginToAUser, editAUser, changeAUsereMailOrPassword, deleteAUser, findMe, findAllUsers, findAllUsersBySameName, findAUserById, findAUserByEmail } = require('./resolvers/UserResolvers')
 
 // CSV Resolvers
-const { createFromCSVData, findAllCSVData } = require('./resolvers/CSVResolvers')
+const { createFromCSVData, deleteAllCSVData, findAllCSVData } = require('./resolvers/CSVResolvers')
 
 const resolvers = {
     Mutation: {
@@ -14,7 +14,8 @@ const resolvers = {
         deleteAUser,
 
         // CSV Mutations
-        createFromCSVData
+        createFromCSVData,
+        deleteAllCSVData,
     },
     Query: {
         // User Queries

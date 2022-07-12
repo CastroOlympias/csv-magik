@@ -49,6 +49,8 @@ type Mutation {
 
     ########## CSV Mutations
     createFromCSVData(columnA: String, columnB: String, columnC: String, columnD: String, columnE: String, columnF: String, columnG: String, columnH: String, columnI: String, columnJ: String, columnK: String, columnL: String, columnM: String, columnN: String): CSVModel
+
+    deleteAllCSVData: CSVModel
 }
 
 type Query {

@@ -6,6 +6,10 @@ const csvResolvers = {
         const csvData = await CSVModel.create(args)
         return csvData
     },
+    deleteAllCSVData: async (parent, args) => {
+        const deleteAllData = await CSVModel.deleteMany()
+        return deleteAllData
+    },
 
     // Queries
     findAllCSVData: async (parent, args) => {
