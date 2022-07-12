@@ -1,9 +1,34 @@
 import logo from './logo.svg';
+import { useQuery, useMutation } from '@apollo/client';
 import './App.css';
 import React, { useState } from 'react';
+import { FIND_ALL_CSV_DATA } from './connections/queries/CSVQueries'
+import { CREATE_CSV_DATA_DUMP, DELETE_ALL_CSV_DATA_DUMP } from './connections/mutations/CSVMutations'
 
 
 function App() {
+
+  const { loading: loadingCSV, data: dataCSV } = useQuery(FIND_ALL_CSV_DATA)
+  const csvDataDump = dataCSV?.findAllCSVData || {}
+  console.log(csvDataDump)
+
+  const [deleteDatabase, { loading: loadedDeleteDatabase, data: dataDeleteDatabase }] = useMutation(DELETE_ALL_CSV_DATA_DUMP, {
+    refetchQueries: [
+      { query: FIND_ALL_CSV_DATA },
+  ]
+  })
+
+  const deleteFromDatabase = async () => {
+    console.log('delete me')
+
+    try {
+      await deleteDatabase()
+    }
+    catch (err) {
+      console.log(err)
+    }
+
+  }
 
   function processFile() {
     var fileSize = 0;
@@ -89,15 +114,6 @@ function App() {
     return false;
   }
 
-
-  // getCsvData = function () {
-  //   console.log('get my cell data')
-  //   const getData = document.getElementById('myTable')
-  //   console.log(getData)
-  // }
-
-
-  // Hey
   return (
     <div className="App">
       <header className="App-header">
@@ -105,10 +121,11 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <br></br>
+        <br />
         <input id="myFile" type="file"></input>
-        {/* <br></br> */}
         <button onClick={processFile}>Pocess file</button>
+
+        <button onClick={deleteFromDatabase}>Delete Database</button>
       </header>
     </div>
   );

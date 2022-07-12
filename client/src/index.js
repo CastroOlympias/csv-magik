@@ -3,11 +3,34 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ApolloClient, ApolloProvider, HttpLink, ApolloLink, InMemoryCache, concat } from '@apollo/client';
+
+
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      authorization: localStorage.getItem('id_token') || null,
+    }
+  }));
+
+  return forward(operation);
+})
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: concat(authMiddleware, httpLink),
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
   </React.StrictMode>
 );
 
