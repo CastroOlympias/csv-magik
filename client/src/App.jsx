@@ -30,26 +30,25 @@ function App() {
 
   }
 
-  function processFile() {
-    var fileSize = 0;
+  function checkCSVFile() {
+    let fileSize = 0;
     //get file
-    var theFile = document.getElementById("myFile");
+    let theFile = document.getElementById("myFile");
 
     console.log(theFile.value)
-
-    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+    let regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
     //check if file is CSV
     if (regex.test(theFile.value.toLowerCase())) {
       //check if browser support FileReader
       if (typeof (FileReader) != "undefined") {
         //get table element
-        var table = document.getElementById("myTable");
-        var headerLine = "";
+        let table = document.getElementById("myTable");
+        let headerLine = "";
         //create html5 file reader object
-        var myReader = new FileReader();
+        let myReader = new FileReader();
         // call filereader. onload function
         myReader.onload = function (e) {
-          var content = myReader.result;
+          let content = myReader.result;
           // console.log('::: RAW CVS DATA :::', content)
           // convert contect into an array of rows
           const arrayOfRows = content.split('\r')
@@ -96,9 +95,7 @@ function App() {
                 rebuildRow = []
               }
             }
-
           }
-
         }
         //call file reader onload
         myReader.readAsText(theFile.files[0]);
@@ -106,7 +103,64 @@ function App() {
       else {
         alert("This browser does not support HTML5.");
       }
+    }
+    else {
+      alert("Please upload a valid CSV file.");
+    }
+    return false;
+  }
 
+  function processFile() {
+    var fileSize = 0;
+    let theFile = document.getElementById("myFile");
+    console.log(theFile.value)
+    let regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+    //check if file is CSV
+    if (regex.test(theFile.value.toLowerCase())) {
+      //check if browser support FileReader
+      if (typeof (FileReader) != "undefined") {
+        //get table element
+        let table = document.getElementById("myTable");
+        let headerLine = "";
+        //create html5 file reader object
+        let myReader = new FileReader();
+        // call filereader. onload function
+        myReader.onload = function (e) {
+          let content = myReader.result;
+          // console.log('::: RAW CVS DATA :::', content)
+          // convert contect into an array of rows
+          const arrayOfRows = content.split('\r')
+          console.log('::: Array Of Rows :::', 'Number Of Rows From CSV', arrayOfRows.length - 1, arrayOfRows)
+          // run a loop from the array of rows to console log 1 row at a time
+          const columnHeader = arrayOfRows[0].split(',')
+          console.log(columnHeader.length)
+          let rebuildRow = []
+          let rebuildArrayOfRows = []
+          let cellIterator = []
+          for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
+            const rowIterator = arrayOfRows[rowIndex].split(',')
+            for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
+              cellIterator = rowIterator[cellIndex]
+              if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
+              } else {
+                rebuildRow.push(cellIterator)
+              }
+              if (rebuildRow.length < columnHeader.length) {
+              } else {
+
+                rebuildArrayOfRows.push(rebuildRow)
+                console.log(rebuildArrayOfRows)
+                rebuildRow = []
+              }
+            }
+          }
+        }
+        //call file reader onload
+        myReader.readAsText(theFile.files[0]);
+      }
+      else {
+        alert("This browser does not support HTML5.");
+      }
     }
     else {
       alert("Please upload a valid CSV file.");
@@ -123,8 +177,8 @@ function App() {
         </p>
         <br />
         <input id="myFile" type="file"></input>
-        <button onClick={processFile}>Pocess file</button>
-
+        <button onClick={checkCSVFile}>Check CSV index</button>
+        <button onClick={processFile}>Send to database</button>
         <button onClick={deleteFromDatabase}>Delete Database</button>
       </header>
     </div>
