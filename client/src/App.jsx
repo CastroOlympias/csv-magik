@@ -10,7 +10,7 @@ function App() {
 
   const { loading: loadingCSV, data: dataCSV } = useQuery(FIND_ALL_CSV_DATA)
   const csvDataDump = dataCSV?.findAllCSVData || {}
-  console.log(csvDataDump)
+  // console.log(csvDataDump)
 
   const [deleteDatabase, { loading: loadedDeleteDatabase, data: dataDeleteDatabase }] = useMutation(DELETE_ALL_CSV_DATA_DUMP, {
     refetchQueries: [
@@ -111,9 +111,9 @@ function App() {
   }
 
   const [createFromCSVData, { loading, error, data }] = useMutation(CREATE_CSV_DATA_DUMP)
-  console.log(loading)
-  console.log(error)
-  console.log(data)
+  // console.log(loading)
+  // console.log(error)
+  // console.log(data)
 
   const processFile = async event => {
     var fileSize = 0;
@@ -151,11 +151,11 @@ function App() {
 
           const doSomething = async () => {
             for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
-             
+
               const rowIterator = arrayOfRows[rowIndex].split(',')
 
               for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
-  
+
                 cellIterator = rowIterator[cellIndex]
                 if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
                 } else {
@@ -183,7 +183,22 @@ function App() {
                   rebuildRow = []
                 }
               }
+
             }
+
+
+
+            if (loading == true) {
+              console.log('Maging GraphQl Mutation Requests')
+            } else {
+              console.log('Done')
+              const timeStoped = timer++
+              console.log(timeStoped)
+              console.log(rebuildArrayOfRows)
+
+
+            }
+
           }
           doSomething()
 
@@ -192,7 +207,13 @@ function App() {
 
 
 
-          console.log('GraphQl request done')
+          console.log('Making GraphQl Requests')
+          let timer = 0
+          setInterval(() => {
+            let time = timer++
+            // console.log(time)
+            return
+          }, 1000);
         }
         //call file reader onload
         myReader.readAsText(theFile.files[0]);
@@ -204,7 +225,7 @@ function App() {
     else {
       alert("Please upload a valid CSV file.");
     }
-    console.log('GraphQl request done')
+
     // return false;
   }
 
