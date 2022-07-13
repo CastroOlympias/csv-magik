@@ -110,11 +110,15 @@ function App() {
     return false;
   }
 
-  function processFile() {
+  const [createFromCSVData, { loading, error, data }] = useMutation(CREATE_CSV_DATA_DUMP)
+  console.log(loading)
+  console.log(error)
+  console.log(data)
 
+  const processFile = async event => {
     var fileSize = 0;
     let theFile = document.getElementById("myFile");
-    console.log(theFile.value)
+    // console.log(theFile.value)
     let regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
     //check if file is CSV
     if (regex.test(theFile.value.toLowerCase())) {
@@ -131,10 +135,10 @@ function App() {
           // console.log('::: RAW CVS DATA :::', content)
           // convert contect into an array of rows
           const arrayOfRows = content.split('\r')
-          console.log('::: Array Of Rows :::', 'Number Of Rows From CSV', arrayOfRows.length - 1, arrayOfRows)
+          // console.log('::: Array Of Rows :::', 'Number Of Rows From CSV', arrayOfRows.length - 1, arrayOfRows)
           // run a loop from the array of rows to console log 1 row at a time
           const columnHeader = arrayOfRows[0].split(',')
-          console.log(columnHeader.length)
+          // console.log(columnHeader.length)
           let rebuildRow = []
           let rebuildArrayOfRows = []
           let cellIterator = []
@@ -142,48 +146,53 @@ function App() {
           const sleep = (time) => {
             return new Promise((resolve) => setTimeout(resolve, time))
           }
-          for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
-           
-            const rowIterator = arrayOfRows[rowIndex].split(',')
-            for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
-              
-              cellIterator = rowIterator[cellIndex]
-              if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
-              } else {
-                rebuildRow.push(cellIterator)
-              }
-              if (rebuildRow.length < columnHeader.length) {
-              } else {
-                // console.log(rebuildRow)
-                const handleFormSubmit = async event => {
 
 
 
-                  const doSomething = async () => {
+          const doSomething = async () => {
+            for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
+             
+              const rowIterator = arrayOfRows[rowIndex].split(',')
 
-                    const sendCSVRowDataToDatabase = { columnA: rebuildRow[0], columnB: rebuildRow[1], columnC: rebuildRow[2], columnD: rebuildRow[3], columnE: rebuildRow[4], columnF: rebuildRow[5], columnG: rebuildRow[6], columnH: rebuildRow[7], columnI: rebuildRow[8], columnJ: rebuildRow[9], columnK: rebuildRow[10], columnL: rebuildRow[11], columnM: rebuildRow[12], columnN: rebuildRow[13] }
-                    // console.log(rebuildRow)
-                    // console.log(sendCSVRowDataToDatabase)
-                    try {
-                      const { data } = await createFromCSVData({
-                        variables: {
-                          ...sendCSVRowDataToDatabase
-                        }
-                      });
-                    } catch (e) {
-                      console.log(e)
-                    }
-                  }
-                  doSomething()
+              for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
+  
+                cellIterator = rowIterator[cellIndex]
+                if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
+                } else {
+                  // await sleep()
+                  rebuildRow.push(cellIterator)
                 }
-                handleFormSubmit()
-                rebuildArrayOfRows.push(rebuildRow)
-                console.log(rebuildArrayOfRows)
-                rebuildRow = []
+                if (rebuildRow.length < columnHeader.length) {
+                } else {
+                  // console.log(rebuildRow)
+                  const sendCSVRowDataToDatabase = { columnA: rebuildRow[0], columnB: rebuildRow[1], columnC: rebuildRow[2], columnD: rebuildRow[3], columnE: rebuildRow[4], columnF: rebuildRow[5], columnG: rebuildRow[6], columnH: rebuildRow[7], columnI: rebuildRow[8], columnJ: rebuildRow[9], columnK: rebuildRow[10], columnL: rebuildRow[11], columnM: rebuildRow[12], columnN: rebuildRow[13] }
+                  // console.log(rebuildRow)
+                  // console.log(sendCSVRowDataToDatabase)
+                  try {
+                    const { data } = await createFromCSVData({
+                      variables: {
+                        ...sendCSVRowDataToDatabase
+                      }
+                    });
+                  } catch (e) {
+                    console.log(e)
+                  }
+                  // handleFormSubmit()
+                  rebuildArrayOfRows.push(rebuildRow)
+                  // console.log(rebuildArrayOfRows)
+                  rebuildRow = []
+                }
               }
             }
           }
-          console.log('done')
+          doSomething()
+
+
+
+
+
+
+          console.log('GraphQl request done')
         }
         //call file reader onload
         myReader.readAsText(theFile.files[0]);
@@ -195,12 +204,12 @@ function App() {
     else {
       alert("Please upload a valid CSV file.");
     }
+    console.log('GraphQl request done')
     // return false;
-
   }
 
 
-  const [createFromCSVData, { error }] = useMutation(CREATE_CSV_DATA_DUMP)
+
 
   // const [createFromCSVData, { error }] = useMutation(CREATE_CSV_DATA_DUMP, {
   //   update(cache, { data: { createFromCSVData } }) {
