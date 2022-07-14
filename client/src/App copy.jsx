@@ -52,84 +52,13 @@ function App() {
           // console.log('::: RAW CVS DATA :::', content)
           // convert contect into an array of rows
           const arrayOfRows = content.split('\r')
-          // console.log('::: Array Of Rows :::', 'Number Of Rows From CSV', arrayOfRows.length - 1, arrayOfRows)
+          console.log('::: Array Of Rows :::', 'Number Of Rows From CSV', arrayOfRows.length - 1, arrayOfRows)
           // run a loop from the array of rows to console log 1 row at a time
           const columnHeader = arrayOfRows[0].split(',')
-          // console.log(columnHeader.length)
+          console.log(columnHeader.length)
           let rebuildRow = []
           let rebuildArrayOfRows = []
           let cellIterator = []
-          let batchOfRows = []
-          let remainingBatchOfRows = []
-
-
-
-          const graphqlBatchRequestProcess = async () => {
-            // console.log(rebuildArrayOfRows)
-            let buildBatchofIndexedRows = []
-            let batch = []
-            let batchAmount = 1200
-            const sleep = (time) => {
-              return new Promise((resolve) => setTimeout(resolve, time))
-            }
-            // console.log(remainder)
-
-            for (let IndexedCSVFileRows = 0; IndexedCSVFileRows < rebuildArrayOfRows.length; IndexedCSVFileRows++) {
-             
-              let indexedRow = rebuildArrayOfRows[IndexedCSVFileRows]
-              // console.log(indexedRow)
-              batchOfRows.push(indexedRow)
-              // console.log(batchOfRows)
-              if (batchOfRows.length == batchAmount) {
-                batch.push(batchOfRows)
-                console.log('400')
-                console.log(batch)
-                batchOfRows = []
-              }
-
-            }
-
-
-            let remainder = batchAmount * batch.length
-            console.log(remainder)
-            if (batchAmount * batch.length == remainder) {
-              console.log('this is done')
-            } else {
-              console.log('this isnt done')
-            }
-
-
-
-            let alf = rebuildArrayOfRows.length - batchAmount * batch.length
-            console.log(alf)
-
-            for (let IndexedCSVFileRows = remainder; IndexedCSVFileRows < rebuildArrayOfRows.length; IndexedCSVFileRows++) {
-             
-              let indexedRow = rebuildArrayOfRows[IndexedCSVFileRows]
-              // console.log(indexedRow)
-              remainingBatchOfRows.push(indexedRow)
-              // console.log(batchOfRows)
-              if (remainingBatchOfRows.length == alf) {
-                batch.push(remainingBatchOfRows)
-                console.log('341')
-                console.log(batch)
-                remainingBatchOfRows = []
-              }
-
-
-
-            }
-            console.log(batch)
-            // for (let remainingIndexedRows = remainder; remainingIndexedRows < rebuildArrayOfRows.length; remainingIndexedRows++) {
-            //    let batchOfRows = rebuildArrayOfRows[remainingIndexedRows]
-            //   // await sleep(1000)
-            //   batch.push(batchOfRows)
-            //   console.log(batch)
-            // }
-
-
-          }
-
           for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
             // Here, we will take the arrayOfRows and iterate over them
             // The rowIterator has an array of columns
@@ -162,18 +91,11 @@ function App() {
                 // Ater pushing the rebuildRow into rebuildArrayOfRows array, rebuildRow zeros out, or just becmes an empty array again otherwise you'd create a tone of duplicate data
                 // Once rebuildRow array becomes an empty array again, the next row array index is processed and the row columns are looped through it
                 rebuildArrayOfRows.push(rebuildRow)
-                if (rebuildArrayOfRows.length + 1 == arrayOfRows.length) {
-                  // console.log(rebuildArrayOfRows)
-                  console.log('CSV file is now indexed', rebuildArrayOfRows)
-                  graphqlBatchRequestProcess()
-                }
+                console.log(rebuildArrayOfRows)
                 rebuildRow = []
               }
             }
           }
-
-
-
         }
         //call file reader onload
         myReader.readAsText(theFile.files[0]);
@@ -221,30 +143,22 @@ function App() {
           let rebuildArrayOfRows = []
           let cellIterator = []
 
+          const doSomething = async () => {
+            for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
 
+              const rowIterator = arrayOfRows[rowIndex].split(',')
 
+              for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
 
-
-          for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
-
-            const rowIterator = arrayOfRows[rowIndex].split(',')
-
-            for (let cellIndex = 0; cellIndex < rowIterator.length; cellIndex++) {
-
-              cellIterator = rowIterator[cellIndex]
-              if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
-              } else {
-                // await sleep()
-                rebuildRow.push(cellIterator)
-              }
-              if (rebuildRow.length < columnHeader.length) {
-              } else {
-                // console.log(rebuildRow)
-
-
-
-                const doSomething = async () => {
-
+                cellIterator = rowIterator[cellIndex]
+                if (cellIterator == ' LLC' || cellIterator == ' LLC"' || cellIterator == ' LLC."' || cellIterator == ' L.L.C."' || cellIterator == ' Inc"' || cellIterator == ' Inc.' || cellIterator == ' Inc."' || cellIterator == ' Inc."' || cellIterator == ' INC.\"' || cellIterator == '\"' || cellIterator == 'Ltd' || cellIterator == 'Ltd.' || cellIterator == 'Ltd."' || cellIterator == 'Ltd"' || cellIterator == ' Ltd.\"' || cellIterator == ' LC.\"' || cellIterator == ' Inc. RESIDENTIAL\"' || cellIterator == ' L\"' || cellIterator == ' Jetways Systems\"' || cellIterator == ' National Associat\"' || cellIterator == ' INC\"') {
+                } else {
+                  // await sleep()
+                  rebuildRow.push(cellIterator)
+                }
+                if (rebuildRow.length < columnHeader.length) {
+                } else {
+                  // console.log(rebuildRow)
                   const sendCSVRowDataToDatabase = { columnA: rebuildRow[0], columnB: rebuildRow[1], columnC: rebuildRow[2], columnD: rebuildRow[3], columnE: rebuildRow[4], columnF: rebuildRow[5], columnG: rebuildRow[6], columnH: rebuildRow[7], columnI: rebuildRow[8], columnJ: rebuildRow[9], columnK: rebuildRow[10], columnL: rebuildRow[11], columnM: rebuildRow[12], columnN: rebuildRow[13] }
                   // console.log(rebuildRow)
                   // console.log(sendCSVRowDataToDatabase)
@@ -257,23 +171,34 @@ function App() {
                   } catch (e) {
                     console.log(e)
                   }
-
-
-
+                  // handleFormSubmit()
+                  rebuildArrayOfRows.push(rebuildRow)
+                  // console.log(rebuildArrayOfRows)
+                  rebuildRow = []
                 }
-                doSomething()
-
-                rebuildArrayOfRows.push(rebuildRow)
-                if (rebuildArrayOfRows.length + 1 == arrayOfRows.length) {
-                  console.log('CSV file is now indexed')
-                  console.log(rebuildArrayOfRows)
-
-                }
-                rebuildRow = []
               }
+
+            }
+
+
+
+            if (loading == true) {
+              console.log('Maging GraphQl Mutation Requests')
+            } else {
+              console.log('Done')
+              const timeStoped = timer++
+              console.log(timeStoped)
+              console.log(rebuildArrayOfRows)
+
+
             }
 
           }
+          doSomething()
+
+
+
+
 
 
           console.log('Making GraphQl Requests')
@@ -283,23 +208,6 @@ function App() {
             // console.log(time)
             return
           }, 1000);
-
-          if (loading == true) {
-            // console.log('Maging GraphQl Mutation Requests')
-          } else {
-            console.log('Done')
-            const timeStoped = timer++
-            console.log(csvDataDump)
-            if (loading == false) {
-              console.log(csvDataDump)
-            }
-            // console.log(timeStoped)
-            // console.log(rebuildArrayOfRows)
-          }
-
-
-
-
         }
         //call file reader onload
         myReader.readAsText(theFile.files[0]);
