@@ -66,7 +66,7 @@ function App() {
           let batchAmount = 1200
           let batchOfRows = []
           let remainingBatchOfRows = []
-          let batch = []
+          let arrayOfBatches = []
 
           // This function handles creating an array of batch requests to be sent used in GraphQl Mutations
           const graphqlBatchRequestProcess = async () => {
@@ -74,23 +74,23 @@ function App() {
               let indexedRow = rebuildArrayOfRows[IndexedCSVFileRows]
               batchOfRows.push(indexedRow)
               if (batchOfRows.length == batchAmount) {
-                batch.push(batchOfRows)
+                arrayOfBatches.push(batchOfRows)
                 console.log('Creating Batches')
                 batchOfRows = []
               }
             }
 
-            let batchedRows = batchAmount * batch.length
-            let remainingRowsToBatch = rebuildArrayOfRows.length - batchAmount * batch.length
+            let batchedRows = batchAmount * arrayOfBatches.length
+            let remainingRowsToBatch = rebuildArrayOfRows.length - batchAmount * arrayOfBatches.length
             console.log('Rows Batched', batchedRows)
             console.log('Remaning Rows To Batch', remainingRowsToBatch)
             for (let IndexedCSVFileRows = batchedRows; IndexedCSVFileRows < rebuildArrayOfRows.length; IndexedCSVFileRows++) {
               let indexedRow = rebuildArrayOfRows[IndexedCSVFileRows]
               remainingBatchOfRows.push(indexedRow)
               if (remainingBatchOfRows.length == remainingRowsToBatch) {
-                batch.push(remainingBatchOfRows)
+                arrayOfBatches.push(remainingBatchOfRows)
                 console.log('Batch Building Complete')
-                console.log(batch)
+                console.log('Array Of Batches', arrayOfBatches)
                 remainingBatchOfRows = []
               }
             }
