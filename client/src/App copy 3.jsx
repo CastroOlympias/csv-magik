@@ -39,7 +39,7 @@ function App() {
     }
 
   }
-  // console.log(csvDataDump)
+  console.log(csvDataDump)
   const checkCSVFile = async => {
     let fileSize = 0;
     //get file
@@ -73,7 +73,7 @@ function App() {
           let cellIterator = []
 
           // Arrays used to batch the indexed CSV data for batch reqeusts against GraphQl Mutations
-          let batchAmount = 1000
+          let batchAmount = 1200
           let batchOfRows = []
           let remainingBatchOfRows = []
           let arrayOfBatches = []
@@ -116,59 +116,57 @@ function App() {
           }
 
 
+
           let loadingToDatabase = true
           let notLoadingToDatabase = false
-          let sendCSVRowDataToDatabase = {}
           // this will loop over the arrayOfBatches, then inside will loop of the batch array of rows, then these rows will be looped to get the cell value to send to the database
           const destructureArrayOfBatchesOfRows = async event => {
+
             const sleep = (time) => {
               return new Promise((resolve) => setTimeout(resolve, time))
-            }
-
-
+          }
             console.log('Hey you', arrayOfBatches)
             for (let arrayOfBatchesIndex = 0; arrayOfBatchesIndex < arrayOfBatches.length; arrayOfBatchesIndex++) {
+              if (loadingToCreateCSVData == true || loadingToCreateCSVData == 'undefined') {
+
+                // console.log(arrayOfBatches[arrayOfBatchesIndex])
+                // arrayOfBatchesIndex--
+                await sleep(80000)
+              } else {
+                let batchedRowArray = arrayOfBatches[arrayOfBatchesIndex]
+                console.log(batchedRowArray)
+                // This loop loops over each row in the batch
+                for (let batchedRowsArrayIndex = 0; batchedRowsArrayIndex < batchedRowArray.length; batchedRowsArrayIndex++) {
+                  let batchedRow = batchedRowArray[batchedRowsArrayIndex]
+                  // console.log(batchedRow)
+
+                  const doSomething = async () => {
+
+                    const sendCSVRowDataToDatabase = { columnA: batchedRow[0], columnB: batchedRow[1], columnC: batchedRow[2], columnD: batchedRow[3], columnE: batchedRow[4], columnF: batchedRow[5], columnG: batchedRow[6], columnH: batchedRow[7], columnI: batchedRow[8], columnJ: batchedRow[9], columnK: batchedRow[10], columnL: batchedRow[11], columnM: batchedRow[12], columnN: batchedRow[13] }
+                    // console.log(rebuildRow)
+                    // console.log(sendCSVRowDataToDatabase)
+                    try {
+                      const { data } = await createFromCSVData({
+                        variables: {
+                          ...sendCSVRowDataToDatabase
+                        }
+                      });
+
+                      // console.log(data)
+                    } catch (e) {
+                      console.log(e)
+                    }
 
 
-              // console.log(arrayOfBatches[arrayOfBatchesIndex])
-              // arrayOfBatchesIndex--
-              // await sleep(80000)
-
-              let batchedRowArray = arrayOfBatches[arrayOfBatchesIndex]
-              console.log(batchedRowArray)
-              // This loop loops over each row in the batch
-              for (let batchedRowsArrayIndex = 0; batchedRowsArrayIndex < batchedRowArray.length; batchedRowsArrayIndex++) {
-                let batchedRow = batchedRowArray[batchedRowsArrayIndex]
-                // console.log(batchedRow)
-
-                const doSomething = async () => {
-
-                  sendCSVRowDataToDatabase = { columnA: batchedRow[0], columnB: batchedRow[1], columnC: batchedRow[2], columnD: batchedRow[3], columnE: batchedRow[4], columnF: batchedRow[5], columnG: batchedRow[6], columnH: batchedRow[7], columnI: batchedRow[8], columnJ: batchedRow[9], columnK: batchedRow[10], columnL: batchedRow[11], columnM: batchedRow[12], columnN: batchedRow[13] }
-                  // console.log(rebuildRow)
-                  // console.log(sendCSVRowDataToDatabase)
-                  try {
-                    let { loading, data } = await createFromCSVData({
-                      variables: {
-                        ...sendCSVRowDataToDatabase
-                      }
-                    });
 
 
-                  } catch (e) {
-                    console.log(e)
                   }
-                  // While the wait works, this seems to stack the previous mutation request
-
-                  sendCSVRowDataToDatabase = {}
-
+                  doSomething()
+                  
                 }
-
-                doSomething()
-
+                // await sleep(80000)
               }
-
-              await sleep(60000)
-
+             
             }
 
           }
@@ -180,10 +178,10 @@ function App() {
           // }
 
 
-          // setTimeout((arrayOfBatchesIndex) => {
-          //   arrayOfBatchesIndex++
-          //   destructureArrayOfBatchesOfRows()
-          // }, 80000);
+setTimeout((arrayOfBatchesIndex) => {
+  arrayOfBatchesIndex++
+  destructureArrayOfBatchesOfRows()
+}, 80000);
 
 
 
