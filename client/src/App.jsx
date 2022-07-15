@@ -10,7 +10,12 @@ function App() {
 
   const { loading: loadingCSV, data: dataCSV } = useQuery(FIND_ALL_CSV_DATA)
   const csvDataDump = dataCSV?.findAllCSVData || {}
-  // console.log(csvDataDump)
+  console.log(csvDataDump)
+
+  const [createFromCSVData, { loading: loadingToCreateCSVData, error, data }] = useMutation(CREATE_CSV_DATA_DUMP)
+  // console.log(loading)
+  // console.log(error)
+  // console.log(data)
 
   const [deleteDatabase, { loading: loadedDeleteDatabase, data: dataDeleteDatabase }] = useMutation(DELETE_ALL_CSV_DATA_DUMP, {
     refetchQueries: [
@@ -69,7 +74,11 @@ function App() {
           let arrayOfBatches = []
 
           // This function handles creating an array of batch requests to be sent used in GraphQl Mutations
-          const graphqlBatchRequestProcess = async () => {
+          const buildArrayOfBatchesOfRows = async () => {
+            // This loop creates the maximum size for the batchAmount array of rows, but his will not add the remaining rows that don't count up the batchAmount number
+            // To create a batch, once the batchOfRows array length is equal to batchAmount then a push is created to build the arrayOfBatches.
+            // the tail end of the indexed csv array is less the batchAmount, so that tail end failes the if statement and doesn't get added the arrayOfBatches
+            // The second for loop doesn't run until this first for loop runs, leaving the second for loop outside this one allows this two step loop procees to run really fast
             for (let IndexedCSVFileRows = 0; IndexedCSVFileRows < rebuildArrayOfRows.length; IndexedCSVFileRows++) {
               let indexedRow = rebuildArrayOfRows[IndexedCSVFileRows]
               batchOfRows.push(indexedRow)
@@ -80,6 +89,10 @@ function App() {
               }
             }
 
+            // This loop is used to batch the remaining rows that were left behind from the above loop, starting from where the above loop ended
+            // The above loop ends first allow for a total count of currently batched rows from where the this second loop can then automaticaly the difference, and where to start in the indexed csv array
+            // This allows variable use in whereby you only have to adjust the let batchAmount =, and the match will auto caculate and build the batches thier repsective size
+            // This will dymanically change the remaining amout of rows to batch and the if statement will adjust according to the remaining amount and always add the remaing rows
             let batchedRows = batchAmount * arrayOfBatches.length
             let remainingRowsToBatch = rebuildArrayOfRows.length - batchAmount * arrayOfBatches.length
             console.log('Rows Batched', batchedRows)
@@ -92,11 +105,43 @@ function App() {
                 console.log('Batch Building Complete')
                 console.log('Array Of Batches', arrayOfBatches)
                 remainingBatchOfRows = []
+                destructureArrayOfBatchesOfRows()
               }
             }
           }
 
-          // This set of loops is what indexes the CSV file data, once the CSV file indexing is complete, this will call the graphqlBatchRequestProcess() function
+          let loadingToDatabase = true
+          let notLoadingToDatabase = false
+          // this will loop over the arrayOfBatches, then inside will loop of the batch array of rows, then these rows will be looped to get the cell value to send to the database
+          const destructureArrayOfBatchesOfRows = () => {
+            console.log('Hey you', arrayOfBatches)
+            for (let arrayOfBatchesIndex = 0; arrayOfBatchesIndex < arrayOfBatches.length; arrayOfBatchesIndex++) {
+              if (notLoadingToDatabase == true) {
+                console.log(arrayOfBatches[arrayOfBatchesIndex])
+                arrayOfBatchesIndex--
+
+              } else {
+                let batchedRowArray = arrayOfBatches[arrayOfBatchesIndex]
+                console.log(batchedRowArray)
+                for (let batchedRowsIndex = 0; batchedRowsIndex < batchedRowArray.length; batchedRowsIndex++) {
+                  console.log(batchedRowArray[batchedRowsIndex])
+                }
+                
+              }
+
+            }
+          }
+
+
+
+
+
+
+
+
+
+
+          // This set of loops is what indexes the CSV file data, once the CSV file indexing is complete, this will call the buildArrayOfBatchesOfRows() function
           for (let rowIndex = 0; rowIndex < arrayOfRows.length; rowIndex++) {
             // Here, we will take the arrayOfRows and iterate over them
             // The rowIterator has an array of columns
@@ -132,7 +177,7 @@ function App() {
                 if (rebuildArrayOfRows.length + 1 == arrayOfRows.length) {
                   // console.log(rebuildArrayOfRows)
                   console.log('CSV file is now indexed', rebuildArrayOfRows)
-                  graphqlBatchRequestProcess()
+                  buildArrayOfBatchesOfRows()
                 }
                 rebuildRow = []
               }
@@ -154,10 +199,7 @@ function App() {
 
 
 
-  const [createFromCSVData, { loading, error, data }] = useMutation(CREATE_CSV_DATA_DUMP)
-  // console.log(loading)
-  // console.log(error)
-  // console.log(data)
+
 
   function processFile() {
     var fileSize = 0;
@@ -250,13 +292,13 @@ function App() {
             return
           }, 1000);
 
-          if (loading == true) {
+          if (loadingToCreateCSVData == true) {
             // console.log('Maging GraphQl Mutation Requests')
           } else {
             console.log('Done')
             const timeStoped = timer++
             console.log(csvDataDump)
-            if (loading == false) {
+            if (loadingToCreateCSVData == false) {
               console.log(csvDataDump)
             }
             // console.log(timeStoped)
