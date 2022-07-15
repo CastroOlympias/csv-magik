@@ -73,7 +73,7 @@ function App() {
           let cellIterator = []
 
           // Arrays used to batch the indexed CSV data for batch reqeusts against GraphQl Mutations
-          let batchAmount = 1000
+          let batchAmount = 1200
           let batchOfRows = []
           let remainingBatchOfRows = []
           let arrayOfBatches = []
@@ -166,8 +166,8 @@ function App() {
                 doSomething()
 
               }
-
-              await sleep(60000)
+              // This time delay right here with the batchAmount of 1200, is back 2 back tight, with no errors or stops in sending to the data base
+              await sleep(62000)
 
             }
 
